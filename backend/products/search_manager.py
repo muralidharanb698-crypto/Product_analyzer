@@ -1,0 +1,65 @@
+import uuid
+from threading import Lock
+
+# Stores all active searches
+searches = {}
+
+# Thread-safe lock
+lock = Lock()
+
+
+def create_search():
+    """
+    Create a new search session.
+    """
+    search_id = str(uuid.uuid4())
+
+    with lock:
+        searches[search_id] = {
+            "amazon": {
+                "status": "loading",
+                "data": None
+            },
+            "flipkart": {
+                "status": "loading",
+                "data": None
+            },
+            "ajio": {
+                "status": "loading",
+                "data": None
+            },
+            "meesho": {
+                "status": "loading",
+                "data": None
+            }
+        }
+
+    return search_id
+
+
+def update_site(search_id, site, data):
+    """
+    Update one site's result.
+    """
+    with lock:
+        if search_id in searches:
+            searches[search_id][site]["status"] = "done"
+            searches[search_id][site]["data"] = data
+
+
+def update_error(search_id, site, error):
+    """
+    Store scraper error.
+    """
+    with lock:
+        if search_id in searches:
+            searches[search_id][site]["status"] = "error"
+            searches[search_id][site]["data"] = str(error)
+
+
+def get_search(search_id):
+    """
+    Return current search status.
+    """
+    with lock:
+        return searches.get(search_id)

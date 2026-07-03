@@ -1,0 +1,153 @@
+
+
+.home{
+    width:100%;
+    min-height:100vh;
+    background:#c988df;
+}
+
+
+
+.top{
+    width:90%;
+    margin:40px auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.left{
+    flex:1;
+}
+
+.right{
+    flex:1;
+    display:flex;
+    justify-content:flex-end;
+}
+
+.right img{
+    width:450px;
+    max-width:100%;
+}
+
+/* Heading */
+
+#compare{
+    font-size:50px;
+    font-weight:bold;
+    color:#222;
+}
+
+#save{
+    font-size:34px;
+    color:blueviolet;
+    margin-bottom:30px;
+}
+
+
+.search-box{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    margin-top:20px;
+}
+
+.search-box input{
+    width:380px;
+    height:45px;
+    padding:0 15px;
+    border:2px solid #ddd;
+    border-radius:10px;
+    outline:none;
+    font-size:16px;
+}
+
+.search-box input:focus{
+    border-color:blueviolet;
+}
+
+#sreach-btn{
+    width:120px;
+    height:45px;
+    border:none;
+    border-radius:10px;
+    background:blueviolet;
+    color:white;
+    cursor:pointer;
+    font-size:16px;
+    transition:.3s;
+}
+
+#sreach-btn:hover{
+    background:#6d28d9;
+    transform:scale(1.05);
+}
+
+
+
+.products{
+    width:90%;
+    margin:50px auto;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:25px;
+}
+
+/* Product Card */
+
+.card{
+    background:white;
+    border-radius:15px;
+    padding:20px;
+    text-align:center;
+    box-shadow:0 3px 12px rgba(0,0,0,.1);
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+}
+
+.card img{
+    width:170px;
+    height:170px;
+    object-fit:contain;
+}
+
+.card h4{
+    margin:15px 0;
+    font-size:17px;
+    height:45px;
+    overflow:hidden;
+}
+
+.card h2{
+    color:blueviolet;
+    margin:10px 0;
+}
+
+.card p{
+    margin:6px 0;
+    color:#555;
+}
+
+.card a{
+    text-decoration:none;
+}
+
+.card button{
+    width:100%;
+    margin-top:15px;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    background:blueviolet;
+    color:white;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.card button:hover{
+    background:#6d28d9;
+}
