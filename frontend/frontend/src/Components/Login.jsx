@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../Styles/Login.css";
 import { useNavigate,Link } from "react-router-dom";
+import Loginbg from "./login_bg.jpg";
 
 function Login() {
   const navigate = useNavigate();
@@ -59,7 +60,9 @@ function Login() {
         <button className="main-login" onClick={handleLogin}>
           Login
         </button>
-        <h1>Or</h1>
+        <br/>
+        <br/>
+        <br/>
         <button className="signup"> <Link to='/register'>Register</Link></button>
       </div>
     </div>
