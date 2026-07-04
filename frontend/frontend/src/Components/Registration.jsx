@@ -1,23 +1,22 @@
 import React, { useState } from "react";
-import '../Styles/Register.css'
-import { useNavigate,Link } from "react-router-dom";
+import "../Styles/Register.css";
+import { useNavigate, Link } from "react-router-dom";
 export default function Registration() {
-  const navigate=useNavigate()
-const [data, setData] = useState({
-        name: "",
-        phone: "",
-        email: "",
-        password: "",
-        confirmPassword: ""
-})
-
+  const navigate = useNavigate();
+  const [data, setData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     setData({
       ...data,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -30,11 +29,9 @@ const [data, setData] = useState({
       newErrors.name = "Name must be at least 3 characters";
     }
 
-
     if (!/^[0-9]{10}$/.test(data.phone)) {
       newErrors.phone = "Phone must be 10 digits";
     }
-
 
     if (!/\S+@\S+\.\S+/.test(data.email)) {
       newErrors.email = "Invalid email";
@@ -56,21 +53,21 @@ const [data, setData] = useState({
     return Object.keys(newErrors).length === 0;
   };
 
-const handleSubmit = (e) => {
-  e.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-  if (validate()) {
-    localStorage.setItem("userData", JSON.stringify(data)); 
-    setData({
-      name: "",
-      phone: "",
-      email: "",
-      password: "",
-      confirmPassword: ""
-    });
-    navigate('/')
-  }
-};
+    if (validate()) {
+      localStorage.setItem("userData", JSON.stringify(data));
+      setData({
+        name: "",
+        phone: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+      navigate("/");
+    }
+  };
 
   return (
     <div className="container">
@@ -122,11 +119,11 @@ const handleSubmit = (e) => {
         />
         <span>{errors.confirmPassword}</span>
 
-        <button type="submit" >
-          Register
-        </button>
+        <button type="submit">Register</button>
         <h2>Or</h2>
-        <h3>Already Have a Account <Link to='/'>Login</Link></h3>
+        <h3>
+          Already Have a Account <Link to="/">Login</Link>
+        </h3>
       </form>
     </div>
   );
