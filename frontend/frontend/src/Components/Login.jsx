@@ -21,7 +21,7 @@ function Login() {
 
     if (user.email === email && user.password === password) {
       console.log("Login Successful");
-
+       localStorage.setItem('name',user.name)
       navigate("/home");
     } else {
       alert("Invalid email or password");
