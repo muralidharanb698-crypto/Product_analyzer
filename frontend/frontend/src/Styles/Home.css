@@ -83,6 +83,22 @@
     background:#6d28d9;
     transform:scale(1.05);
 }
+#search-btn{
+    width:120px;
+    height:45px;
+    border:none;
+    border-radius:10px;
+    background:blueviolet;
+    color:white;
+    cursor:pointer;
+    font-size:16px;
+    transition:.3s;
+}
+
+#search-btn:hover{
+    background:#6d28d9;
+    transform:scale(1.05);
+}
 
 
 
@@ -150,4 +166,97 @@
 
 .card button:hover{
     background:#6d28d9;
+}
+
+
+@media (max-width: 768px) {
+
+    .top{
+        flex-direction: column-reverse;
+        text-align: center;
+        gap: 30px;
+    }
+
+    .right{
+        justify-content: center;
+    }
+
+    .right img{
+        width:300px;
+    }
+
+    #compare{
+        font-size:40px;
+    }
+
+    #save{
+        font-size:28px;
+    }
+
+    .search-box{
+        flex-direction: column;
+        width:100%;
+    }
+
+    .search-box input{
+        width:100%;
+        max-width:450px;
+    }
+
+    #search-btn{
+        width:100%;
+        max-width:450px;
+    }
+
+    .products{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+
+@media (max-width:480px){
+
+    .top{
+        width:95%;
+        margin:20px auto;
+    }
+
+    .right img{
+        width:220px;
+    }
+
+    #compare{
+        font-size:32px;
+    }
+
+    #save{
+        font-size:22px;
+    }
+
+    .search-box input{
+        width:100%;
+        font-size:15px;
+    }
+
+    #search-btn{
+        width:100%;
+    }
+
+    .products{
+        width:95%;
+        grid-template-columns:1fr;
+    }
+
+    .card img{
+        width:140px;
+        height:140px;
+    }
+
+    .card h4{
+        font-size:15px;
+    }
+
+    .card h2{
+        font-size:22px;
+    }
 }

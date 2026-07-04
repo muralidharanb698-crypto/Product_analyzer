@@ -1,10 +1,8 @@
 import uuid
 from threading import Lock
 
-# Stores all active searches
 searches = {}
 
-# Thread-safe lock
 lock = Lock()
 
 
@@ -38,9 +36,6 @@ def create_search():
 
 
 def update_site(search_id, site, data):
-    """
-    Update one site's result.
-    """
     with lock:
         if search_id in searches:
             searches[search_id][site]["status"] = "done"

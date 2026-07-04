@@ -34,7 +34,7 @@
 }
 
 .nav a:hover {
-    color: #ffffff;
+    color: #db68e1;
 }
 .nav button {
     padding: 10px 18px;
@@ -45,8 +45,9 @@
 }
 
 .login-btn {
-    background:white;
-    color: #bd25eb;
+    background:rgb(154, 58, 210);
+    color: #ffffff;
+    
     border: 2px solid #c325eb;
 }
 
@@ -56,11 +57,58 @@
 }
 
 .register-btn {
-    background: #2563eb;
-    color: white;
+    background: #a925eb;
+    color: rgb(0, 0, 0);
     border: none;
 }
 
 .register-btn:hover {
     background: #1d4ed8;
+}
+
+.hamburger{
+    display:none;
+    font-size:30px;
+    color:rgb(255, 255, 255);
+    cursor:pointer;
+}
+
+/* Mobile */
+@media (max-width:768px){
+
+    .navbar{
+        position:relative;
+        padding:15px 20px;
+    }
+
+    .hamburger{
+        display:block;
+    }
+
+    .nav{
+        display:none;
+        position:absolute;
+        top:70px;
+        left:0;
+        width:100%;
+        background:#8525eb;
+        flex-direction:column;
+        align-items:center;
+        gap:18px;
+        padding:20px 0;
+        z-index:1000;
+    }
+
+    .nav.active{
+        display:flex;
+    }
+
+    .nav a{
+        color:rgb(255, 255, 255);
+        font-size:18px;
+    }
+
+    .nav button{
+        width:180px;
+    }
 }

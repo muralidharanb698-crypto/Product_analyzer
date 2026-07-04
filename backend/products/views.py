@@ -23,9 +23,6 @@ SCRAPERS = {
 
 
 def run_scraper(search_id, site, scraper, product):
-    """
-    Runs one scraper and updates the search status.
-    """
     try:
         result = scraper(product)
         update_site(search_id, site, result)
