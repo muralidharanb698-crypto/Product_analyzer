@@ -3,18 +3,13 @@ import '../Styles/Register.css'
 import { useNavigate,Link } from "react-router-dom";
 export default function Registration() {
   const navigate=useNavigate()
-const [data, setData] = useState(() => {
-  const saved = localStorage.getItem("userData");
-  return saved
-    ? JSON.parse(saved)
-    : {
+const [data, setData] = useState({
         name: "",
         phone: "",
         email: "",
         password: "",
         confirmPassword: ""
-      };
-});
+})
 
 
   const [errors, setErrors] = useState({});
@@ -73,7 +68,7 @@ const handleSubmit = (e) => {
       password: "",
       confirmPassword: ""
     });
-    navigate('/home')
+    navigate('/')
   }
 };
 

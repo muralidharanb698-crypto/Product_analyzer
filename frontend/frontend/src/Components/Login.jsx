@@ -20,7 +20,7 @@ function Login() {
     }
 
     if (user.email === email && user.password === password) {
-      alert("Login Successful");
+      console.log("Login Successful");
 
       navigate("/home");
     } else {
