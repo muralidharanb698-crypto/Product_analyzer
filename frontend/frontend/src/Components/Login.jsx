@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "../Styles/Login.css";
-import { useNavigate,Link } from "react-router-dom";
-import Loginbg from "./login_bg.jpg";
+import { useNavigate, Link } from "react-router-dom";
 
 function Login() {
   const navigate = useNavigate();
@@ -9,22 +8,33 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    const user = JSON.parse(localStorage.getItem("userData"));
+  const handleLogin = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
 
-    console.log("Stored user:", user);
+      const result = await response.json();
 
-    if (!user) {
-      alert("No user found. Please register first");
-      return;
-    }
+      if (response.ok && result.status) {
 
-    if (user.email === email && user.password === password) {
-      console.log("Login Successful");
-       localStorage.setItem('name',user.name)
-      navigate("/home");
-    } else {
-      alert("Invalid email or password");
+        localStorage.setItem("name", result.name);
+        localStorage.setItem("email", result.email);
+
+        navigate("/home");
+      } else {
+        alert(result.message);
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Cannot connect to Django server");
     }
   };
 
@@ -53,17 +63,17 @@ function Login() {
           />
         </div>
 
-        <div className="forgot">
-          <a href="/">Forgot Password?</a>
-        </div>
-
         <button className="main-login" onClick={handleLogin}>
           Login
         </button>
-        <br/>
-        <br/>
-        <br/>
-        <button className="signup"> <Link to='/register'>Register</Link></button>
+
+        <br />
+        <br />
+
+        <button className="signup">
+          <Link to="/register">Register</Link>
+        </button>
+
       </div>
     </div>
   );
