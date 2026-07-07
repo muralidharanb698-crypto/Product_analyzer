@@ -6,14 +6,12 @@ searches = {}
 lock = Lock()
 
 
-def create_search():
-    """
-    Create a new search session.
-    """
+def create_search(query):
     search_id = str(uuid.uuid4())
 
     with lock:
         searches[search_id] = {
+            "query": query,      # <-- Add this line
             "amazon": {
                 "status": "loading",
                 "data": None
@@ -43,9 +41,6 @@ def update_site(search_id, site, data):
 
 
 def update_error(search_id, site, error):
-    """
-    Store scraper error.
-    """
     with lock:
         if search_id in searches:
             searches[search_id][site]["status"] = "error"
@@ -53,8 +48,5 @@ def update_error(search_id, site, error):
 
 
 def get_search(search_id):
-    """
-    Return current search status.
-    """
     with lock:
         return searches.get(search_id)

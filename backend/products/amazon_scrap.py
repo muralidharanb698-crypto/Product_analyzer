@@ -1,24 +1,31 @@
+import re
+import urllib.parse
 from playwright.sync_api import sync_playwright
-from pprint import pprint
-from urllib.parse import urlparse, parse_qs, unquote
 
 
-from urllib.parse import quote
-from playwright.sync_api import sync_playwright
-from pprint import pprint
+def clean_price(raw):
+    if not raw:
+        return None
+    digits = re.sub(r"[^\d]", "", raw)
+    return int(digits) if digits else None
 
 
-from playwright.sync_api import sync_playwright
-from pprint import pprint
+def clean_rating(raw):
+    if not raw:
+        return 4.0
+    match = re.search(r"(\d+(\.\d+)?)", raw)
+    return float(match.group(1)) if match else 4.0
 
-
-def amazon_scrape(product):
+def amazon_scrape(product, max_results=5):
     products = []
+
+    query = urllib.parse.quote(product)
 
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=True,
-            channel="chrome"
+            channel="chrome",
+            args=["--disable-blink-features=AutomationControlled"]
         )
 
         context = browser.new_context(
@@ -27,7 +34,6 @@ def amazon_scrape(product):
         )
 
         page = context.new_page()
-
         page.set_default_timeout(10000)
         page.set_default_navigation_timeout(10000)
 
@@ -37,15 +43,16 @@ def amazon_scrape(product):
             });
         """)
 
-        page.goto(
-            "https://www.amazon.in/",
-            wait_until="domcontentloaded",
-            timeout=10000
-        )
-
-        page.wait_for_selector("#twotabsearchtextbox", timeout=10000)
-        page.fill("#twotabsearchtextbox", product)
-        page.click("#nav-search-submit-button")
+        try:
+            page.goto(
+                f"https://www.amazon.in/s?k={query}",
+                wait_until="domcontentloaded",
+                timeout=15000
+            )
+        except Exception as e:
+            print("Amazon navigation error:", e)
+            browser.close()
+            return []
 
         CARD_SELECTOR = "div[data-component-type='s-search-result']"
 
@@ -56,53 +63,75 @@ def amazon_scrape(product):
             return []
 
         cards = page.locator(CARD_SELECTOR)
+        count = min(cards.count(), max_results)
 
-        if cards.count() == 0:
-            browser.close()
-            return []
+        for i in range(count):
+            card = cards.nth(i)
 
-        card = cards.first
-        img = card.locator("img").first
+            try:
+                if card.locator("text=Sponsored").count() > 0:
+                    continue
+            except:
+                pass
 
-        print("src:", img.get_attribute("src"))
+            title = None
 
-        try:
-            title = card.locator("h2 span").first.text_content().strip()
-        except:
-            title = "Not Available"
+            selectors = [
+                "h2 a span",
+                "h2 span",
+                "a h2 span",
+                "h2"
+            ]
 
-        try:
-            price = card.locator(".a-price-whole").first.text_content().strip()
-        except:
-            price = "Not Available"
+            for selector in selectors:
+                try:
+                    text = card.locator(selector).first.text_content(timeout=1000)
+                    if text and len(text.strip()) > 3:
+                        title = text.strip()
+                        break
+                except:
+                    pass
 
-        try:
-            rating = card.locator(".a-icon-alt").first.text_content().strip()
-        except:
-            rating = "No Rating"
+            if not title:
+                continue
 
-        try:
-            image = card.locator("img.s-image").first.get_attribute("src")
-        except:
+            price_raw = None
+            try:
+                price_raw = card.locator(".a-price-whole").first.text_content().strip()
+            except:
+                pass
+
+            rating_raw = None
+            try:
+                rating_raw = card.locator(".a-icon-alt").first.text_content().strip()
+            except:
+                pass
+
             image = None
+            try:
+                image = card.locator("img.s-image").first.get_attribute("src")
+            except:
+                pass
 
-        try:
-            href = card.locator("h2 a").first.get_attribute("href")
-            if href:
-                link = "https://www.amazon.in" + href
-            else:
+            try:
+                link = card.locator("a.a-link-normal.s-line-clamp-2").first.get_attribute("href")
+                if not link:
+                    link = card.locator("h2 a").first.get_attribute("href")
+
+                if link:
+                    if link.startswith("/"):
+                        link = "https://www.amazon.in" + link
+            except Exception:
                 link = None
-        except:
-            link = None
 
-        products.append({
-            "title": title,
-            "price": price,
-            "rating": rating,
-            "image": image,
-            "link": link,
-            "website": "Amazon"
-        })
+            products.append({
+                "title": title,
+                "price": clean_price(price_raw),
+                "rating": clean_rating(rating_raw),
+                "image": image,
+                "url": link,
+                "site": "amazon"
+            })
 
         context.close()
         browser.close()
@@ -111,5 +140,7 @@ def amazon_scrape(product):
 
 
 if __name__ == "__main__":
+    from pprint import pprint
+
     product = input("Enter product: ")
     pprint(amazon_scrape(product))

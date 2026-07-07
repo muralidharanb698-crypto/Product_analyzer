@@ -34,7 +34,8 @@ __pycache__/
 
 # Environment files
 .env
-Python
+
+# Python
 __pycache__/
 *.pyc
 
@@ -55,3 +56,5 @@ node_modules/
 # React build
 build/
 dist/
+
+backend/ajio.png

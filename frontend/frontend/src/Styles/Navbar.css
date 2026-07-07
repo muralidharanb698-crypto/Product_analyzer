@@ -1,114 +1,166 @@
-.home{
-  margin-top: 0px;
-  background-color: #c0a6db;
-}
 .navbar {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 10px 30px;
-    background: linear-gradient(90deg, #8525eb, #9846e5, #ae3aed);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    justify-content: space-around;
+    height: 90px;
+    padding: 0 20px;
+
+    background: rgb(192, 192, 255);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    transition: all 0.4s ease;
 }
 
-#logo {
-    color: #ffffff;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
+.navbar.scrolled {
+    background: #ffffff;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
 }
 
+
+#logo{
+    font-size: 24px;
+    color: #1d4ed8;
+}
+#wise{
+    color: black;
+}
+
+.navbar .left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
 .nav {
     display: flex;
     align-items: center;
-    gap: 25px;
+    gap: 40px;
 }
 
-.nav a {
-    text-decoration: none;
-    color: #333;
-    font-size: 17px;
-    font-weight: 500;
-    transition: 0.3s;
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 35px;
 }
 
-.nav a:hover {
-    color: #db68e1;
+.user-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
-.nav button {
-    padding: 10px 18px;
-    border-radius: 8px;
+
+.user-section h3 {
+    margin: 0;
     font-size: 15px;
-    cursor: pointer;
-    transition: 0.3s;
 }
 
-.login-btn {
-    background:rgb(154, 58, 210);
-    color: #ffffff;
-    
-    border: 2px solid #c325eb;
-}
-
-.login-btn:hover {
-    background: #2563eb;
-    color: white;
-}
-
-.register-btn {
-    background: #a925eb;
-    color: rgb(0, 0, 0);
+.user-section button {
+    padding: 8px 14px;
     border: none;
+    border-radius: 6px;
+    background: #ff0000;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,5);
+    width: 90px;
+    height: 40px;
+    font-weight: bolder;
+    font-size: 16px;
+
 }
 
-.register-btn:hover {
+.user-section button:hover {
     background: #1d4ed8;
 }
 
-.hamburger{
-    display:none;
-    font-size:30px;
-    color:rgb(255, 255, 255);
-    cursor:pointer;
+
+.nav a {
+    text-decoration: none;
+    color: black;
+    position: relative;
+    padding: 5px 10px;
 }
 
-/* Mobile */
-@media (max-width:768px){
+.nav a:hover{
+    color: #1d4ed8;
+}
 
-    .navbar{
-        position:relative;
-        padding:15px 20px;
+.nav a::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -10px;
+    transform: translateX(-50%) scaleX(0);
+    width: 40px;
+    height: 3px;
+    background: blue;
+    transition: 0.3s;
+}
+
+.nav a:hover::after,
+.nav a.active::after {
+    transform: translateX(-50%) scaleX(1);
+}
+
+.hamburger {
+    display: none;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* =========================
+   MOBILE RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+
+    .hamburger {
+        display: block;
     }
 
-    .hamburger{
-        display:block;
+    /* hide nav by default */
+    .nav {
+        position: absolute;
+        top: 90px;
+        right: 0;
+        width: 100%;
+        background: white;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+
+        /* hidden state */
+        display: none;
     }
 
-    .nav{
-        display:none;
-        position:absolute;
-        top:70px;
-        left:0;
-        width:100%;
-        background:#8525eb;
-        flex-direction:column;
-        align-items:center;
-        gap:18px;
-        padding:20px 0;
-        z-index:1000;
+    /* show when active */
+    .nav.active {
+        display: flex;
     }
 
-    .nav.active{
-        display:flex;
+    .nav-links {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        width: 100%;
     }
 
-    .nav a{
-        color:rgb(255, 255, 255);
-        font-size:18px;
+    .user-section {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        gap: 10px;
     }
 
-    .nav button{
-        width:180px;
+    .user-section h3 {
+        font-size: 16px;
+    }
+
+    .user-section button {
+        width: 100%;
     }
 }

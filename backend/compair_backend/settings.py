@@ -11,7 +11,7 @@ SECRET_KEY = 'django-insecure-auf)u*dq4de-l33uqf(&b0z6&e&^^=nsdyd027ko0)kcj8i9_d
 DEBUG = True
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
-
+SERPAPI_KEY = "4c9eedc8e4549cb5c04a69643463b3213a184375bc57407c20bd05738e39a69b"
 
 # Application definition
 
