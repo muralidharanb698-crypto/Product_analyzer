@@ -34,3 +34,24 @@ __pycache__/
 
 # Environment files
 .env
+Python
+__pycache__/
+*.pyc
+
+# Virtual Environment
+.venv/
+venv/
+env/
+
+# Django
+db.sqlite3
+
+# VS Code
+.vscode/
+
+# Node
+node_modules/
+
+# React build
+build/
+dist/
