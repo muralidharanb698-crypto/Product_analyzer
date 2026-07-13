@@ -1,111 +1,350 @@
 from playwright.sync_api import sync_playwright
 from urllib.parse import quote
 from pprint import pprint
+import re
 
 
-def ajio_scrape(product):
+
+def clean_price(raw):
+
+    if not raw:
+        return None
+
+    numbers = re.findall(
+        r"\d+",
+        raw.replace(",", "")
+    )
+
+    return int(numbers[0]) if numbers else None
+
+
+
+
+def ajio_scrape(product, max_results=5):
+
     products = []
 
     with sync_playwright() as p:
+
+
         browser = p.chromium.launch(
             headless=True,
-            channel="chrome",
-            args=["--disable-blink-features=AutomationControlled"]
+            args=[
+                "--disable-blink-features=AutomationControlled"
+            ]
         )
 
+
         context = browser.new_context(
-            viewport={"width": 1366, "height": 768},
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
+
+            user_agent=
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 Chrome/120 Safari/537.36"
+
         )
+
 
         page = context.new_page()
 
-        page.add_init_script("""
-        Object.defineProperty(navigator, 'webdriver', {
-            get: () => undefined
-        });
-        """)
 
-        url = f"https://www.ajio.com/search/?text={quote(product)}"
-
-        page.goto(url, wait_until="domcontentloaded")
-
-        page.wait_for_timeout(5000)
-
-        print("URL :", page.url)
-        print("TITLE :", page.title())
-
-        page.screenshot(path="ajio.png")
 
         try:
-            page.wait_for_selector("div.item", timeout=10000)
-        except:
-            print("No products found.")
+
+            url = (
+                f"https://www.ajio.com/search/?text={quote(product)}"
+            )
+
+
+            print("Opening:",url)
+
+
+            page.goto(
+                url,
+                wait_until="networkidle",
+                timeout=30000
+            )
+
+
+            page.wait_for_timeout(5000)
+
+
+
+        except Exception as e:
+
+            print(
+                "Ajio navigation error:",
+                e
+            )
+
             browser.close()
+
             return []
 
-        cards = page.locator("div.item")
-        for i in range(min(cards.count(), 1)):
-            card = cards.nth(i)
+
+
+
+        print("URL:",page.url)
+
+        print("TITLE:",page.title())
+
+
+
+
+        # Product cards
+
+        selectors = [
+
+            "div.item",
+
+            "div.rilrtl-products-list",
+
+            "div.product-card",
+
+            "div[class*='item']"
+
+        ]
+
+
+
+        cards=None
+
+
+
+        for selector in selectors:
 
             try:
+
+                page.wait_for_selector(
+                    selector,
+                    timeout=5000
+                )
+
+                cards = page.locator(selector)
+
+                if cards.count()>0:
+
+                    break
+
+
+            except:
+
+                pass
+
+
+
+
+        if not cards:
+
+
+            print(
+                "No Ajio products found"
+            )
+
+            browser.close()
+
+            return []
+
+
+
+
+        count = cards.count()
+
+
+        print(
+            "Ajio products found:",
+            count
+        )
+
+
+
+
+        for i in range(
+            min(count,max_results)
+        ):
+
+
+            try:
+
+
+                card = cards.nth(i)
+
+
+
+                # Title
+
+                title = None
+
+
+
                 try:
-                    brand = card.locator(".brand").text_content().strip()
+
+                    title = card.locator(
+                        "div.brand"
+                    ).inner_text(timeout=1000)
+
+
                 except:
-                    brand = ""
+
+                    pass
+
+
 
                 try:
-                    name = card.locator(".nameCls").text_content().strip()
+
+                    name = card.locator(
+                        "div.nameCls"
+                    ).inner_text(timeout=1000)
+
+
+                    if name:
+
+                        title = (
+                            title + " " + name
+                            if title else name
+                        )
+
+
                 except:
-                    name = ""
 
-                title = f"{brand} {name}".strip()
+                    pass
+
+
+
+
+                if not title:
+
+
+                    try:
+
+                        title = card.inner_text(
+                            timeout=1000
+                        )
+
+                    except:
+
+                        continue
+
+
+
+
+                # Price
+
+
+                price=None
+
 
                 try:
-                    price = card.locator(".price strong").text_content()
-                    price = price.replace("₹", "").replace(",", "").strip()
+
+                    price = card.locator(
+                        "div.price"
+                    ).inner_text(timeout=1000)
+
+
                 except:
-                    price = "Not Available"
+
+                    pass
+
+
+
+
+
+                # Image
+
 
                 try:
-                    image = card.locator("img").first.get_attribute("src")
+
+                    image = card.locator(
+                        "img"
+                    ).first.get_attribute(
+                        "src"
+                    )
+
                 except:
-                    image = None
+
+                    image=None
+
+
+
+
+
+                # Link
+
 
                 try:
-                    href = card.locator("a").first.get_attribute("href")
-                    if href:
-                        if href.startswith("/"):
-                            link = "https://www.ajio.com" + href
-                        else:
-                            link = href
+
+                    href = card.locator(
+                        "a"
+                    ).first.get_attribute(
+                        "href"
+                    )
+
+
+                    if href and href.startswith("/"):
+
+                        link = (
+                            "https://www.ajio.com"
+                            + href
+                        )
+
                     else:
-                        link = None
+
+                        link=href
+
+
                 except:
-                    link = None
-                
-                try:
-                  rating = card.locator("p._3I65V").first.text_content().strip()
-                except:
-                  rating = "No Rating"
+
+                    link=None
+
+
+
+
 
                 products.append({
-                    "title": title,
-                    "price": price,
-                    "rating": rating,
-                    "image": image,
-                    "link": link,
-                    "website": "Ajio"
+
+                    "title":title.strip(),
+
+                    "price":clean_price(price),
+
+                    "rating":4.0,
+
+                    "image":image,
+
+                    "url":link,
+
+                    "site":"ajio"
+
                 })
 
+
+
             except Exception as e:
-                print(e)
+
+                print(
+                    "Ajio card error:",
+                    e
+                )
+
+
 
         browser.close()
+
+
+
+    pprint(products)
 
     return products
 
 
+
+
 if __name__ == "__main__":
-    product = input("Enter product: ")
-    pprint(ajio_scrape(product))
+
+
+    product=input(
+        "Enter product: "
+    )
+
+
+    pprint(
+        ajio_scrape(product)
+    )

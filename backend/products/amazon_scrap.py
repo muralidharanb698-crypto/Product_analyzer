@@ -6,141 +6,200 @@ from playwright.sync_api import sync_playwright
 def clean_price(raw):
     if not raw:
         return None
-    digits = re.sub(r"[^\d]", "", raw)
-    return int(digits) if digits else None
+
+    numbers = re.findall(r"\d+", raw.replace(",", ""))
+
+    if numbers:
+        return int(numbers[0])
+
+    return None
 
 
 def clean_rating(raw):
     if not raw:
         return 4.0
-    match = re.search(r"(\d+(\.\d+)?)", raw)
-    return float(match.group(1)) if match else 4.0
+
+    match = re.search(r"\d+\.\d+", raw)
+
+    if match:
+        return float(match.group())
+
+    return 4.0
+
+
 
 def amazon_scrape(product, max_results=5):
-    products = []
+
+    results = []
 
     query = urllib.parse.quote(product)
 
+
     with sync_playwright() as p:
+
         browser = p.chromium.launch(
             headless=True,
-            channel="chrome",
-            args=["--disable-blink-features=AutomationControlled"]
+            args=[
+                "--disable-blink-features=AutomationControlled"
+            ]
         )
+
 
         context = browser.new_context(
-            viewport={"width": 1366, "height": 768},
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
+            user_agent=
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 Chrome/120 Safari/537.36"
         )
 
+
         page = context.new_page()
-        page.set_default_timeout(10000)
-        page.set_default_navigation_timeout(10000)
 
-        page.add_init_script("""
-            Object.defineProperty(navigator, 'webdriver', {
-                get: () => undefined
-            });
-        """)
 
         try:
+
+            url = f"https://www.amazon.in/s?k={query}"
+
+            print("Opening:", url)
+
+
             page.goto(
-                f"https://www.amazon.in/s?k={query}",
-                wait_until="domcontentloaded",
-                timeout=15000
+                url,
+                wait_until="networkidle",
+                timeout=30000
             )
+
+
+            page.wait_for_timeout(3000)
+
+
+
         except Exception as e:
-            print("Amazon navigation error:", e)
+
+            print("Navigation Error:", e)
+
             browser.close()
+
             return []
 
-        CARD_SELECTOR = "div[data-component-type='s-search-result']"
 
-        try:
-            page.wait_for_selector(CARD_SELECTOR, timeout=10000)
-        except:
-            browser.close()
-            return []
 
-        cards = page.locator(CARD_SELECTOR)
-        count = min(cards.count(), max_results)
+        # Amazon product cards
 
-        for i in range(count):
-            card = cards.nth(i)
+        cards = page.locator(
+            "div.s-result-item[data-component-type='s-search-result']"
+        )
+
+
+        count = cards.count()
+
+
+        print("Products found:", count)
+
+
+
+        for i in range(min(count,max_results)):
+
 
             try:
-                if card.locator("text=Sponsored").count() > 0:
+
+                card = cards.nth(i)
+
+
+                title = card.locator(
+                    "h2"
+                ).inner_text(timeout=3000)
+
+
+                if not title:
                     continue
-            except:
-                pass
 
-            title = None
 
-            selectors = [
-                "h2 a span",
-                "h2 span",
-                "a h2 span",
-                "h2"
-            ]
 
-            for selector in selectors:
+                # price
+
+                price = None
+
                 try:
-                    text = card.locator(selector).first.text_content(timeout=1000)
-                    if text and len(text.strip()) > 3:
-                        title = text.strip()
-                        break
+
+                    price = card.locator(
+                        ".a-price-whole"
+                    ).inner_text(timeout=2000)
+
                 except:
                     pass
 
-            if not title:
-                continue
 
-            price_raw = None
-            try:
-                price_raw = card.locator(".a-price-whole").first.text_content().strip()
-            except:
-                pass
 
-            rating_raw = None
-            try:
-                rating_raw = card.locator(".a-icon-alt").first.text_content().strip()
-            except:
-                pass
+                # image
 
-            image = None
-            try:
-                image = card.locator("img.s-image").first.get_attribute("src")
-            except:
-                pass
+                image = None
 
-            try:
-                link = card.locator("a.a-link-normal.s-line-clamp-2").first.get_attribute("href")
-                if not link:
-                    link = card.locator("h2 a").first.get_attribute("href")
+                try:
 
-                if link:
-                    if link.startswith("/"):
-                        link = "https://www.amazon.in" + link
-            except Exception:
+                    image = card.locator(
+                        "img"
+                    ).get_attribute("src")
+
+                except:
+                    pass
+
+
+
+                # link
+
                 link = None
 
-            products.append({
-                "title": title,
-                "price": clean_price(price_raw),
-                "rating": clean_rating(rating_raw),
-                "image": image,
-                "url": link,
-                "site": "amazon"
-            })
+                try:
 
-        context.close()
+                    link = card.locator(
+                        "h2 a"
+                    ).get_attribute("href")
+
+
+                    if link and link.startswith("/"):
+
+                        link = (
+                            "https://www.amazon.in"
+                            + link
+                        )
+
+                except:
+                    pass
+
+
+
+
+                results.append({
+
+                    "title": title.strip(),
+
+                    "price": clean_price(price),
+
+                    "rating":4.0,
+
+                    "image":image,
+
+                    "url":link,
+
+                    "site":"amazon"
+
+                })
+
+
+
+            except Exception as e:
+
+                print(
+                    "Card error:",
+                    e
+                )
+
+
+
         browser.close()
 
-    return products
 
 
-if __name__ == "__main__":
-    from pprint import pprint
+    print(results)
 
-    product = input("Enter product: ")
-    pprint(amazon_scrape(product))
+    return results
