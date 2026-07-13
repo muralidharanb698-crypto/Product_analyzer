@@ -1,33 +1,25 @@
 import re
 from urllib.parse import quote
-from pprint import pprint
 from playwright.sync_api import sync_playwright
 
 
-
 def clean_price(raw):
-
     if not raw:
         return None
 
-    numbers = re.findall(
-        r"\d+",
-        raw.replace(",", "")
-    )
+    numbers = re.findall(r"\d+", raw.replace(",", ""))
 
-    return int(numbers[0]) if numbers else None
+    if numbers:
+        return int(numbers[0])
 
+    return None
 
 
 def clean_rating(raw):
-
     if not raw:
         return 4.0
 
-    match = re.search(
-        r"\d+\.\d+",
-        raw
-    )
+    match = re.search(r"\d+\.\d+", raw)
 
     if match:
         return float(match.group())
@@ -35,306 +27,132 @@ def clean_rating(raw):
     return 4.0
 
 
-
-def safe_text(locator):
-
-    try:
-
-        text = locator.inner_text(
-            timeout=1500
-        )
-
-        return text.strip()
-
-    except:
-
-        return ""
-
-
-
-
 def meesho_scrape(product, max_results=5):
 
-    products = []
+    results = []
 
     with sync_playwright() as p:
 
-
         browser = p.chromium.launch(
-
             headless=True,
-
             args=[
                 "--disable-blink-features=AutomationControlled"
             ]
-
         )
-
 
         context = browser.new_context(
-
-            user_agent=
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-            "AppleWebKit/537.36 Chrome/120 Safari/537.36"
-
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36"
         )
-
 
         page = context.new_page()
 
-
-
         try:
 
-            url = (
-                f"https://www.meesho.com/search?q={quote(product)}"
-            )
+            url = f"https://www.meesho.com/search?q={quote(product)}"
 
-
-            print("Opening:",url)
-
+            print("Opening:", url)
 
             page.goto(
-
                 url,
-
-                wait_until="networkidle",
-
-                timeout=30000
-
+                wait_until="domcontentloaded",
+                timeout=60000
             )
 
-
-            page.wait_for_timeout(4000)
-
-
+            page.wait_for_timeout(5000)
 
         except Exception as e:
 
-            print(
-                "Meesho navigation error:",
-                e
-            )
+            print("Navigation Error:", e)
 
             browser.close()
 
             return []
 
-
-
-
-        print(
-            "URL:",
-            page.url
-        )
-
-
-        print(
-            "TITLE:",
-            page.title()
-        )
-
-
-
-
-        # Product links
-
-        cards = page.locator(
-            'a[href*="/p/"]'
-        )
-
+        cards = page.locator('a[href*="/p/"]')
 
         count = cards.count()
 
+        print("Products found:", count)
 
-        print(
-            "Meesho products found:",
-            count
-        )
-
-
-
-        for i in range(
-            min(count,max_results)
-        ):
-
+        for i in range(min(count, max_results)):
 
             try:
 
-
                 card = cards.nth(i)
 
+                title = None
 
-
-                # Title
-
-                title=""
-
-
-
-                possible_titles=[
-
+                selectors = [
                     "p",
-
                     "h3",
-
-                    "div[title]",
-
+                    "div[title]"
                 ]
 
-
-
-                for selector in possible_titles:
-
+                for selector in selectors:
                     try:
-
-                        value = safe_text(
-                            card.locator(selector).first
-                        )
-
-                        if len(value)>5:
-
-                            title=value
-
+                        title = card.locator(selector).first.inner_text(timeout=2000)
+                        if title and len(title) > 5:
                             break
-
                     except:
-
                         pass
 
-
-
-
                 if not title:
-
                     continue
 
-
-
-
-                # Price
-
-                price=""
-
-
+                price = None
 
                 try:
-
-                    text = card.inner_text()
-
-                    match = re.search(
-
-                        r"₹\s?[\d,]+",
-
-                        text
-
-                    )
+                    text = card.inner_text(timeout=2000)
+                    match = re.search(r"₹\s?[\d,]+", text)
 
                     if match:
-
-                        price=match.group()
-
-
+                        price = match.group()
                 except:
-
                     pass
 
-
-
-
-
-                # Image
+                image = None
 
                 try:
-
-                    image = card.locator(
-                        "img"
-                    ).first.get_attribute(
-                        "src"
-                    )
-
+                    image = card.locator("img").first.get_attribute("src")
                 except:
+                    pass
 
-                    image=None
-
-
-
-
-                # Link
+                link = None
 
                 try:
+                    href = card.get_attribute("href")
 
-                    href = card.get_attribute(
-                        "href"
-                    )
-
-
-                    if href and href.startswith("/"):
-
-                        link = (
-                            "https://www.meesho.com"
-                            + href
-                        )
-
-                    else:
-
-                        link=href
-
-
+                    if href:
+                        if href.startswith("/"):
+                            link = "https://www.meesho.com" + href
+                        else:
+                            link = href
                 except:
+                    pass
 
-                    link=None
-
-
-
-
-
-                products.append({
-
-                    "title":title,
-
-                    "price":clean_price(price),
-
-                    "rating":4.0,
-
-                    "image":image,
-
-                    "url":link,
-
-                    "site":"meesho"
-
+                results.append({
+                    "title": title.strip(),
+                    "price": clean_price(price),
+                    "rating": 4.0,
+                    "image": image,
+                    "url": link,
+                    "site": "meesho"
                 })
-
-
 
             except Exception as e:
 
-                print(
-                    "Meesho card error:",
-                    e
-                )
-
-
+                print("Card error:", e)
 
         browser.close()
 
+    print(results)
+
+    return results
 
 
-    pprint(products)
+if __name__ == "__main__":
+    from pprint import pprint
 
-    return products
+    product = input("Enter product: ")
 
-
-
-
-
-if __name__=="__main__":
-
-    product=input(
-        "Enter product: "
-    )
-
-
-    pprint(
-        meesho_scrape(product)
-    )
+    pprint(meesho_scrape(product))

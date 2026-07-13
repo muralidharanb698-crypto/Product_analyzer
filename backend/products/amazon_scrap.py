@@ -64,12 +64,12 @@ def amazon_scrape(product, max_results=5):
 
             page.goto(
                 url,
-                wait_until="networkidle",
-                timeout=30000
-            )
-
-
-            page.wait_for_timeout(3000)
+                wait_until="domcontentloaded",
+                timeout=60000
+                )
+            page.wait_for_timeout(5000)
+            # page.screenshot(path="amazon_debug.png", full_page=True)
+            # print(page.title())
 
 
 
@@ -105,9 +105,7 @@ def amazon_scrape(product, max_results=5):
                 card = cards.nth(i)
 
 
-                title = card.locator(
-                    "h2"
-                ).inner_text(timeout=3000)
+                title = card.locator("h2").last.inner_text(timeout=3000).strip()
 
 
                 if not title:
@@ -136,9 +134,7 @@ def amazon_scrape(product, max_results=5):
 
                 try:
 
-                    image = card.locator(
-                        "img"
-                    ).get_attribute("src")
+                  image = card.locator("img").first.get_attribute("src")
 
                 except:
                     pass
@@ -148,23 +144,14 @@ def amazon_scrape(product, max_results=5):
                 # link
 
                 link = None
-
                 try:
-
-                    link = card.locator(
-                        "h2 a"
-                    ).get_attribute("href")
-
-
+                    link = card.locator("a.a-link-normal.s-line-clamp-2").first.get_attribute("href")
+                    if not link:
+                        link = card.locator("h2 a").first.get_attribute("href")
                     if link and link.startswith("/"):
-
-                        link = (
-                            "https://www.amazon.in"
-                            + link
-                        )
-
+                        link = "https://www.amazon.in" + link
                 except:
-                    pass
+                   link = None
 
 
 
@@ -193,6 +180,7 @@ def amazon_scrape(product, max_results=5):
                     "Card error:",
                     e
                 )
+            
 
 
 
@@ -203,3 +191,8 @@ def amazon_scrape(product, max_results=5):
     print(results)
 
     return results
+if __name__ == "__main__":
+    from pprint import pprint
+
+    product = input("Enter product: ")
+    pprint(amazon_scrape(product))
