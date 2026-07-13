@@ -192,21 +192,21 @@ export default function Registration() {
     if (!validate()) return;
 
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/register/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: data.name,
-            phone: data.phone,
-            email: data.email,
-            password: data.password,
-          }),
-        }
-      );
+const response = await fetch(
+  "https://product-analyzer-4.onrender.com/api/register/",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: data.name,
+      phone: data.phone,
+      email: data.email,
+      password: data.password,
+    }),
+  }
+);
 
       const result = await response.json();
 
