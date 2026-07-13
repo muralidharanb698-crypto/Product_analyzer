@@ -4,6 +4,8 @@ pip install -r requirements.txt
 
 playwright install chromium
 
-python manage.py collectstatic --noinput
+cd backend
 
 python manage.py migrate
+
+python manage.py collectstatic --noinput
