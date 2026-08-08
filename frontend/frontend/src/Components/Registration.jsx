@@ -193,7 +193,7 @@ export default function Registration() {
 
     try {
 const response = await fetch(
-  "https://product-analyzer-4.onrender.com/api/register/",
+   "https://product-analyzer-5.onrender.com/api/register/",
   {
     method: "POST",
     headers: {

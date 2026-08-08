@@ -29,16 +29,16 @@ export default function Home() {
     mainProductSet.current = false;
 
     try {
-    const res = await fetch(
-    `https://product-analyzer-4.onrender.com/api/start-search/?q=${encodeURIComponent(query)}`,
+   const res = await fetch(
+    `https://product-analyzer-5.onrender.com/api/start-search/?q=${encodeURIComponent(query)}`,
   );
 
       const { search_id } = await res.json();
 
       const interval = setInterval(async () => {
         try {
-        const statusRes = await fetch(
-        `https://product-analyzer-4.onrender.com/api/search-status/${search_id}/`,
+       const statusRes = await fetch(
+         `https://product-analyzer-5.onrender.com/api/search-status/${search_id}/`,
         );
 
           const statusData = await statusRes.json();

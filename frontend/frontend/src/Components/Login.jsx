@@ -10,7 +10,7 @@ function Login() {
 
   const handleLogin = async () => {
     try {
-    const response = await fetch("https://product-analyzer-4.onrender.com/api/login/", {
+    const response = await fetch( "https://product-analyzer-5.onrender.com/api/login/", {
     method: "POST",
     headers: {
     "Content-Type": "application/json",
