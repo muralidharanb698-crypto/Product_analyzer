@@ -1,3 +1,4 @@
+
 import "../Styles/Footer.css";
 import {
   FaFacebookF,
@@ -12,10 +13,8 @@ import {
 
 export default function Footer() {
   return (
-    <footer className="footer">
-
+    <footer>
       <div className="footer-container">
-
         <div className="footer-about">
           <h2>
             Price<span>Wise</span>
@@ -27,11 +26,50 @@ export default function Footer() {
           </p>
 
           <div className="social-icons">
-            <a href="#"><FaFacebookF /></a>
-            <a href="#"><FaInstagram /></a>
-            <a href="#"><FaTwitter /></a>
-            <a href="#"><FaLinkedinIn /></a>
-            <a href="#"><FaGithub /></a>
+            <a
+              href="https://www.facebook.com"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Facebook"
+            >
+              <FaFacebookF />
+            </a>
+
+            <a
+              href="https://www.instagram.com"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Instagram"
+            >
+              <FaInstagram />
+            </a>
+
+            <a
+              href="https://twitter.com"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Twitter"
+            >
+              <FaTwitter />
+            </a>
+
+            <a
+              href="https://www.linkedin.com"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="LinkedIn"
+            >
+              <FaLinkedinIn />
+            </a>
+
+            <a
+              href="https://github.com"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="GitHub"
+            >
+              <FaGithub />
+            </a>
           </div>
         </div>
 
@@ -39,20 +77,20 @@ export default function Footer() {
           <h3>Quick Links</h3>
 
           <a href="/">Home</a>
-          <a href="/">Trending Products</a>
-          <a href="/">Compare</a>
-          <a href="/">About</a>
-          <a href="/">Contact</a>
+          <a href="/#trending">Trending Products</a>
+          <a href="/#compare">Compare</a>
+          <a href="/about">About</a>
+          <a href="/contact">Contact</a>
         </div>
 
         <div className="footer-links">
           <h3>Categories</h3>
 
-          <a href="/">Mobiles</a>
-          <a href="/">Laptops</a>
-          <a href="/">Headphones</a>
-          <a href="/">Smart Watches</a>
-          <a href="/">Fashion</a>
+          <a href="/#compare">Mobiles</a>
+          <a href="/#compare">Laptops</a>
+          <a href="/#compare">Headphones</a>
+          <a href="/#compare">Smart Watches</a>
+          <a href="/#compare">Fashion</a>
         </div>
 
         <div className="footer-contact">
@@ -73,7 +111,6 @@ export default function Footer() {
             <span>support@pricewise.com</span>
           </div>
         </div>
-
       </div>
 
       <div className="footer-bottom">
@@ -82,12 +119,12 @@ export default function Footer() {
         </p>
 
         <div className="footer-policy">
-          <a href="/">Privacy</a>
-          <a href="/">Terms</a>
-          <a href="/">Cookies</a>
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
+          <a href="/cookies">Cookies</a>
         </div>
       </div>
-
     </footer>
   );
 }
+

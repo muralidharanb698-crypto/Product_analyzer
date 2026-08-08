@@ -29,19 +29,22 @@ export default function Home() {
     mainProductSet.current = false;
 
     try {
-   const res = await fetch(
-    `https://product-analyzer-5.onrender.com/api/start-search/?q=${encodeURIComponent(query)}`,
-  );
+      const res = await fetch(
+        `https://product-analyzer-5.onrender.com/api/start-search/?q=${encodeURIComponent(
+          query
+        )}`
+      );
 
       const { search_id } = await res.json();
 
       const interval = setInterval(async () => {
         try {
-       const statusRes = await fetch(
-         `https://product-analyzer-5.onrender.com/api/search-status/${search_id}/`,
-        );
+          const statusRes = await fetch(
+            `https://product-analyzer-5.onrender.com/api/search-status/${search_id}/`
+          );
 
           const statusData = await statusRes.json();
+
           console.log("STATUS DATA:", statusData);
 
           const sites = ["amazon", "flipkart", "ajio", "meesho"];
@@ -72,7 +75,7 @@ export default function Home() {
           }
 
           const finished = sites.every(
-            (site) => statusData[site]?.status !== "loading",
+            (site) => statusData[site]?.status !== "loading"
           );
 
           if (finished) {
@@ -92,18 +95,26 @@ export default function Home() {
   };
 
   return (
-    <div className="home">
+    <div>
       <Navbar />
-      <div className="top">
-        <div className="left">
-          <h1 id="compare">
-            Find the <span>Best Price</span> EveryTime Save More{" "}
+
+      <div className="home-section">
+        <div className="home-content">
+          <h1>
+            Find the Best Price EveryTime
+            <br />
+            Save More
           </h1>
-          <p>Compare Price From Amazon , Flipkart , Messho & Ajo</p>
-          <p>And Save More on Every Purchase helloo</p>
+
+          <p>
+            Compare Price From Amazon, Flipkart, Meesho & AJIO
+            <br />
+            And Save More on Every Purchase
+          </p>
         </div>
-        <div className="right">
-          <img src={homeImg} alt="Home" />
+
+        <div className="home-image">
+          <img src={homeImg} alt="Price comparison illustration" />
         </div>
       </div>
 
@@ -119,29 +130,52 @@ export default function Home() {
           Search
         </button>
       </div>
+
       <div className="ecommerce-site">
         <div className="amazon">
-          <img src={amazon} width={200} height={400} />
+          <img
+            src={amazon}
+            width={200}
+            height={400}
+            alt="Amazon"
+          />
         </div>
+
         <div className="flipkart">
-          <img src={flipkart} width={200} height={400} />
+          <img
+            src={flipkart}
+            width={200}
+            height={400}
+            alt="Flipkart"
+          />
         </div>
+
         <div className="ajio">
-          <img src={ajio} />
+          <img
+            src={ajio}
+            alt="AJIO"
+          />
         </div>
+
         <div className="messho">
-          <img src={messho} />
+          <img
+            src={messho}
+            alt="Meesho"
+          />
         </div>
       </div>
+
       {loading && (
-        <h3 style={{ textAlign: "center", marginTop: "20px" }}>Searching...</h3>
+        <h3 style={{ textAlign: "center", marginTop: "20px" }}>
+          Searching...
+        </h3>
       )}
 
       {comparison.length > 0 && (
         <div className="comparison-container">
           <img
             src={productImage}
-            alt={productTitle}
+            alt={productTitle || "Product"}
             className="product-image"
           />
 
@@ -168,7 +202,11 @@ export default function Home() {
 
                   <td>
                     {item.url ? (
-                      <a href={item.url} target="_blank" rel="noreferrer">
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
                         View
                       </a>
                     ) : (
@@ -181,6 +219,7 @@ export default function Home() {
           </table>
         </div>
       )}
+
       <div className="trending-section">
         <h2 id="trending">Trending Products</h2>
 
@@ -188,7 +227,10 @@ export default function Home() {
           <div className="slide-track">
             {products.concat(products).map((product, index) => (
               <div className="comparison-card" key={index}>
-                <img src={product.image} alt={product.title} />
+                <img
+                  src={product.image}
+                  alt={product.title || "Product"}
+                />
 
                 <h3>{product.title}</h3>
 
@@ -205,11 +247,21 @@ export default function Home() {
                     {product.comparison.map((item, i) => (
                       <tr key={i}>
                         <td>{item.site}</td>
+
                         <td>₹{item.price}</td>
+
                         <td>
-                          <button>
-                            <a href={item.url}>View</a>
-                          </button>
+                          {item.url ? (
+                            <a
+                              href={item.url}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              View
+                            </a>
+                          ) : (
+                            "-"
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -220,6 +272,7 @@ export default function Home() {
           </div>
         </div>
       </div>
+
       <Footer />
     </div>
   );
