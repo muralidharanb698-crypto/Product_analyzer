@@ -1,1 +1,1 @@
-web: gunicorn backend.wsgi
+web: gunicorn compair_backend.wsgi:application
