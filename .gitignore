@@ -58,3 +58,4 @@ build/
 dist/
 
 backend/ajio.png
+backend/staticfiles/
