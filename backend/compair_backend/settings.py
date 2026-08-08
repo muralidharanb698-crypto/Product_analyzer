@@ -113,6 +113,6 @@ CORS_ALLOW_ALL_ORIGINS = True
 #     "http://localhost:5173",
 # ]
 CSRF_TRUSTED_ORIGINS = [
-    "https://product-analyzer-4.onrender.com",
+    "https://product-analyzer-5.onrender.com",
     "https://muralidharanb698-crypto.github.io",
 ]
