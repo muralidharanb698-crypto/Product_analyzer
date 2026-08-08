@@ -12,9 +12,9 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    "127.0.0.1",
+    "product-analyzer-5.onrender.com",
     "localhost",
-    "product-analyzer-4.onrender.com",
+    "127.0.0.1",
 ]
 SERPAPI_KEY = os.environ.get("SERPAPI_KEY")
 
